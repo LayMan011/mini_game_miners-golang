@@ -1,9 +1,9 @@
 package equipment
 
 import (
-	"encoding/json"
-	"myproj/errors"
+	"fmt"
 	"myproj/data/info"
+	"myproj/errors"
 	"net/http"
 	"sync"
 )
@@ -38,18 +38,21 @@ func Сompletion() bool {
 	return true;
 }
 
-func GetPurchasedInfo(w http.ResponseWriter, r *http.Request) error {
+func GetPurchasedInfo(w http.ResponseWriter, r *http.Request) {
 	equipments.mtx.RLock()
 	defer equipments.mtx.RUnlock()
 
-	if err := json.NewEncoder(w).Encode(map[string]bool{
+	b := errors.JsonMarhalInd(map[string]bool{
 		"Pickaxe":     equipments.items["pickaxes"].IsPurchased(),
 		"Ventilation": equipments.items["ventilation"].IsPurchased(),
 		"Trolleys":    equipments.items["trolleys"].IsPurchased(),
-	}); err != nil {
-		return err
+	});
+	
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(b); err != nil {
+		fmt.Println("failed to write http response:", err.Error());
+		return;
 	}
-	return nil
 }
 
 func BuyEquipment(name string) error {
@@ -66,11 +69,11 @@ func BuyEquipment(name string) error {
 	}
 
     currentWallet := info.MyCompany.GetWallet()
-    if currentWallet < equipments.items[name].cost {
+    if currentWallet < equipments.items[name].Cost {
         return errors.ErrEquipmentNotEnoughMoney
     }
 
-	info.MyCompany.SetWallet(-equipments.items[name].cost);
+	info.MyCompany.SetWallet(-equipments.items[name].Cost);
 
 	eq.Complete();
 	return nil;

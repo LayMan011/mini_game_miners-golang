@@ -38,14 +38,11 @@ failed:
  - response body: JSON with error + time
 */
 func (h *HTTPHandlers) HandlerMinersInfo(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(map[string]int{
+	WriteData(map[string]int{
 		"Little miner":   5,
 		"Normal miner": 50,
 		"Big miner": 450,
-	}); err != nil {
-		panic(err);
-	}
+	}, w);
 }
 
 /*
@@ -65,14 +62,12 @@ func (h *HTTPHandlers) HandlerMinerAdd(w http.ResponseWriter, r *http.Request) {
 
 	miner, err := coal.NewMinersType(class);
 	if err != nil {
-		fmt.Println("this")
 		errors.HttpErrorBadRequest(w, err);
 		return;
 	}
 
-	id, err := info.AddMiner(miner);
+	id, err, newMinerInfo := info.AddMiner(miner);
 	if err != nil {
-		fmt.Println("that")
 		errors.HttpErrorBadRequest(w, err);
 		return;
 	}
@@ -88,6 +83,8 @@ func (h *HTTPHandlers) HandlerMinerAdd(w http.ResponseWriter, r *http.Request) {
             errors.HttpErrorBadRequest(w, err);
         }
     }()
+
+	WriteData(newMinerInfo, w);	
 }
 
 /*
@@ -105,12 +102,7 @@ failed:
 func (h *HTTPHandlers) HandlerMinersNow(w http.ResponseWriter, r *http.Request) {
 	miners := info.GetMinersNow();
 
-	b := errors.JsonMarhalInd(miners);
-
-	if _, err := w.Write(b); err != nil {
-		fmt.Println("failed to write http response:", err);
-		return;
-	}
+	WriteData(miners, w);
 }
 
 /*
@@ -134,12 +126,7 @@ func (h *HTTPHandlers) HandlerMinersNowClass(w http.ResponseWriter, r *http.Requ
 		return;
 	}
 
-	b := errors.JsonMarhalInd(miners);
-
-	if _, err := w.Write(b); err != nil {
-		fmt.Println("failed to write http response:", err);
-		return;
-	}
+	WriteData(miners, w);
 }
 
 /*
@@ -155,14 +142,11 @@ failed:
  - response body: JSON with error + time
 */
 func (h *HTTPHandlers) HandlerPriceEquipmetns(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(map[string]int{
+	WriteData(map[string]int{
 		"Pickaxe":     3_000,
 		"Ventilation": 15_000,
 		"Trolleys":    50_000,
-	}); err != nil {
-		panic(err);
-	}
+	}, w);
 }
 
 /*
@@ -196,6 +180,8 @@ func (h *HTTPHandlers) HandlerBuyEquipments(w http.ResponseWriter, r *http.Reque
 		return;
 	}
 
+	NewEquipment.IsBuy = true;
+
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(NewEquipment); err != nil {
 		panic(err)
@@ -215,10 +201,7 @@ failed:
  - response body: JSON with error + time
 */
 func (h *HTTPHandlers) HandlerCompleteEquipments(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK);
-	if err := equipment.GetPurchasedInfo(w, r); err != nil {
-		panic(err);
-	}
+	equipment.GetPurchasedInfo(w, r);
 }
 
 /*
@@ -234,14 +217,11 @@ failed:
  - response body: JSON with error + time
 */
 func (h *HTTPHandlers) HandlerInfoCompany(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(map[string]int{
+	WriteData(map[string]int{
 		"Wallet":     info.MyCompany.GetWallet(),
 		"LenMinersNow": info.MyCompany.GetLenMinersNow(),
 		"LenMinersAll":    info.MyCompany.GetLenMinersAll(),
-	}); err != nil {
-		panic(err);
-	}
+	}, w);
 }
 
 /*
@@ -258,16 +238,13 @@ failed:
 */
 func (h *HTTPHandlers) HandlerEndGame(w http.ResponseWriter, r *http.Request) {
 	if equipment.Сompletion() {
-		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(map[string]any{
+		WriteData(map[string]any{
 			"MinersNow": info.MyCompany.GetMinersNow(),
 			"MinersAll": info.MyCompany.GetMinersAll(),
 			"Wallet": info.MyCompany.GetWallet(),
 			"TimeStart": info.MyCompany.GetTimeStart(),
-			"FullTime": info.MyCompany.GetFullTime(),
-		}); err != nil {
-			panic(err);
-		}
+			"FullTime": fmt.Sprintf("%.2f minutes", info.MyCompany.GetFullTime().Minutes()),
+		}, w);
 
 		common.BackCtxCancel();
 		go func() {
@@ -275,7 +252,7 @@ func (h *HTTPHandlers) HandlerEndGame(w http.ResponseWriter, r *http.Request) {
 		}()
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		if err := json.NewEncoder(w).Encode("Вы не купили всё оборудование, поэтому игра не может быть окончена!"); err != nil {
+		if err := json.NewEncoder(w).Encode("You haven't purchased all the equipment, so the game can't be completed!"); err != nil {
 			panic(err);
 		}
 	}

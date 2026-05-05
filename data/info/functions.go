@@ -34,7 +34,7 @@ func StartPassiveIncome() <-chan int {
 	return passiveCh
 }
 
-func AddMiner(m coal.MinerInterface) (int, error) {
+func AddMiner(m coal.MinerInterface) (int, error, *coal.MinerInfo) {
 	MyCompany.mtx.Lock();
 	defer MyCompany.mtx.Unlock();
 
@@ -53,9 +53,9 @@ func AddMiner(m coal.MinerInterface) (int, error) {
 		MyCompany.minersAll[m.GetClass()][newMiner.GetId()] = newMiner;
 		MyCompany.MinersNow[m.GetClass()][newMiner.GetId()] = newMiner;
 		
-		return newMiner.Id, nil
+		return newMiner.Id, nil, &newMiner
 	} else {
-		return 0, errors.ErrMinerNotEnoughMoney;
+		return 0, errors.ErrMinerNotEnoughMoney, nil;
 	}
 }
 

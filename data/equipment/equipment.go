@@ -6,15 +6,15 @@ import (
 )
 
 type Equipment struct {
-	cost  int
-	isBuy bool
+	Cost  int
+	IsBuy bool
 	mtx   sync.RWMutex
 }
 
 func NewEquipment(cost int) *Equipment {
 	return &Equipment{
-		cost: cost,
-		isBuy: false,
+		Cost: cost,
+		IsBuy: false,
 	}
 }
 
@@ -35,11 +35,11 @@ func (e *Equipment) Complete() {
 	e.mtx.Lock();
 	defer e.mtx.Unlock();
 
-	e.isBuy = true;
+	e.IsBuy = true;
 }
 
 func (e *Equipment) IsPurchased() bool {
 	e.mtx.RLock()
 	defer e.mtx.RUnlock()
-	return e.isBuy;
+	return e.IsBuy;
 }
