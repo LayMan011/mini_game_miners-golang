@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"myproj/api"
-	"myproj/info"
+	"myproj/data/info"
 )
 
 func main() {

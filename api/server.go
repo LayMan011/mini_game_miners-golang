@@ -3,7 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
-	"myproj/info"
+	"myproj/data/info"
 	"net/http"
 
 	"github.com/gorilla/mux"

@@ -3,7 +3,7 @@ package equipment
 import (
 	"encoding/json"
 	"myproj/errors"
-	"myproj/info"
+	"myproj/data/info"
 	"net/http"
 	"sync"
 )

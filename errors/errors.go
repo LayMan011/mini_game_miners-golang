@@ -3,7 +3,7 @@ package errors
 import (
 	"encoding/json"
 	"errors"
-	"myproj/dto"
+	"myproj/data/dto"
 	"net/http"
 )
 

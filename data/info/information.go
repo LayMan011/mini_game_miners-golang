@@ -1,7 +1,7 @@
 package info
 
 import (
-	"myproj/coal"
+	"myproj/data/coal"
 	"myproj/errors"
 	"sync"
 	"time"
