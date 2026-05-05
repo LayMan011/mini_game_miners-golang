@@ -13,8 +13,6 @@ type Equipments struct {
 	mtx   sync.RWMutex
 }
 
-var equipments = NewEquipments(); 
-
 func NewEquipments() *Equipments {
 	e := &Equipments{
 		items: make(map[string]*Equipment),

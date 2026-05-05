@@ -11,12 +11,6 @@ type Equipment struct {
 	mtx   sync.RWMutex
 }
 
-var (
-	classPickaxes = "pickaxes"
-	classVentilation = "ventilation"
-	classTrolleys    = "trolleys"
-)
-
 func NewEquipment(cost int) *Equipment {
 	return &Equipment{
 		cost: cost,
@@ -49,7 +43,3 @@ func (e *Equipment) IsPurchased() bool {
 	defer e.mtx.RUnlock()
 	return e.isBuy;
 }
-
-var pickaxes = NewEquipment(3000);
-var ventilation = NewEquipment(15000);
-var trolleys = NewEquipment(50000);

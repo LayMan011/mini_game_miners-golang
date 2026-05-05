@@ -25,10 +25,6 @@ func NewHTTPHandlers(company *info.Company) *HTTPHandlers {
 	}
 }
 
-func (h *HTTPHandlers) SetServer(server *http.Server) {
-	h.server = server
-}
-
 /*
 pattern: /miners/info
 method: GET
@@ -84,7 +80,6 @@ func (h *HTTPHandlers) HandlerMinerAdd(w http.ResponseWriter, r *http.Request) {
 	ChX := miner.Run(common.BackCtx);
 
     go func() {
-        // Читаем все результаты добычи
         for value := range ChX {
             info.MyCompany.SetWallet(value)
         }
